@@ -17,6 +17,7 @@ func main() {
 	http.HandleFunc("/user", handlers.HandleCreateUser)    // POST
 	http.HandleFunc("/lot", handlers.HandleGetLot)         // GET
 	http.HandleFunc("/pair", handlers.HandlePair)          // GET
+	http.HandleFunc("/balance", handlers.HandleGetBalance) // GET
 
 	// Запускаем сервер на порту 8080
 	log.Println("Сервер запущен на порту " + strconv.Itoa(port) + " ...")

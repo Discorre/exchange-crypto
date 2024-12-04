@@ -129,7 +129,7 @@ TV GetMap(const MyHashMap<TK, TV>& map, const TK& key) {
         curr = curr->next;
     }
 
-    throw std::runtime_error("Ключ не найден");
+    throw;
 }
 
 
@@ -153,7 +153,7 @@ void DeleteMap(MyHashMap<TK, TV>& map, const TK& key) {
         prev = curr;
         curr = curr->next;
     }
-    throw std::runtime_error("Ключ не найден");
+    throw;
 }
 
 
