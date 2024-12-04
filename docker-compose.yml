@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: ./crypto-api     
+    ports:
+      - "8080:8080"                  
+    volumes:
+      - ./crypto-api/config.json:/app/config.json   # монтируем папку для просмотра внутри контейнера
+    stdin_open: true
+    tty: true                         
+    depends_on:
+      - db                           
+    restart: always
+
+  db:
+    build:
+      context: ./crypto-db             
+    ports:
+      - "7432:7432"                     
+    volumes:
+      - ./crypto-db/exchange:/app/exchange # Том для хранения данных
+      - ./crypto-db/schema.json:/app/schema.json
+    restart: always                  
