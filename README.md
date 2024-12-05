@@ -100,7 +100,7 @@ Exchange-Crypto - это API для криптовалютной биржи, р�
 curl -X POST http://localhost:8080/user \
 -H "Content-Type: application/json" \
 -d '{
-        "username":"newuser"
+        "username": "newuser"
     }'
 ```
 
@@ -124,7 +124,7 @@ curl -X POST http://localhost:8080/order \
     "quantity": 100,
     "price": 10,
     "type": "sell"
-}'
+    }'
 ```
 
 5. Получение списка ордеров:
@@ -134,10 +134,16 @@ curl -X GET http://localhost:8080/order
 
 6. Удаление ордера:
 ```bash
-curl -X DELETE http://localhost:8080/order -H "Content-Type: application/json" -d '{"order_id":1}'
+curl -X DELETE http://localhost:8080/order \
+-H "Content-Type: application/json" \
+-H "X-USER-KEY: 1956be07-63d3-4569-80f0-2d630fd0c02a" \
+-d '{
+    "order_id": 1
+    }'
 ```
 
 7. Получение баланса пользователя:
 ```bash
-curl -X GET http://localhost:8080/balance -H "Content-Type: application/json", 
+curl -X GET http://localhost:8080/balance \
+-H "Content-Type: application/json"
 ```
