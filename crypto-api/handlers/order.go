@@ -202,12 +202,20 @@ func DeleteOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Проверка является ли пользователь создателем запроса
 	userID = userID[:len(userID)-2] // Убираем лишние символы из строки
-	var reqUserOrder string = "SELECT * FROM order WHERE order.order_id = '" + strconv.Itoa(req.OrderID) + "' AND order.user_id = '" + userID + "' AND order.closed = 'open'"
+
+	var reqUserOrder string = "SELECT * FROM order WHERE order.order_id = '" + strconv.Itoa(req.OrderID) + "' AND order.user_id = '" + userID + "'"//"AND order.closed = 'open'"
 	check, err2 := requestDB.RquestDataBase(reqUserOrder)
 	if err2 != nil || check == "" {
-		http.Error(w, "access error", http.StatusUnauthorized)
+		http.Error(w, "Unautorized access", http.StatusUnauthorized)
 		return
 	}
+
+	var reqCheckClose string = "SELECT * FROM order WHERE order.closed = 'open' AND order.order_id = '" + strconv.Itoa(req.OrderID) + "'"
+	checkClose, err5 := requestDB.RquestDataBase(reqCheckClose)
+	if err5!= nil || checkClose == "" {
+        http.Error(w, "Order is closed", http.StatusUnauthorized)
+        return
+    }
 
 	// Разбиваем результат запроса на поля
 	balanceFields := strings.Split(check, " ")
