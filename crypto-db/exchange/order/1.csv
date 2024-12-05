@@ -1,1 +1,5 @@
 order_id,user_id,pair_id,quantity,price,type,closed
+2,1,1,100,10,sell,close
+3,2,1,100,10,buy,close
+6,1,3,100,10,buy,close
+7,2,3,100,10,sell,close
