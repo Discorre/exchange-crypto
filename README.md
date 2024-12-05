@@ -1,1 +1,1 @@
-# Thierd Laba
+# Thierd Praktice
