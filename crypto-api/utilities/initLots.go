@@ -1,12 +1,13 @@
-package handlers
+package utilities
 
 import (
-	"crypto-api/requestDB"
-	"fmt"
+    "crypto-api/requestDB"
+    "fmt"
+	
 )
 
-// добавление лотов в таблицу lot и pair
-func Init(lotNames []string) {
+// Добавление лотов в таблицу lot и pair
+func InitLots(lotNames []string) {
 	// Проверяем и добавляем отсутствующие лоты в базу данных
 	for index := 0; index < len(lotNames); index++ {
 		// SQL-запрос для проверки наличия лота в базе данных
@@ -65,4 +66,3 @@ func Init(lotNames []string) {
 		}
 	}
 }
-

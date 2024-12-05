@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// запрос к базе данных
+// Запрос к базе данных
 func RquestDataBase(req string) (string, error) {
 	// Устанавливаем TCP-соединение с базой данных на порту
 	_, dbIP, _, dbPort := config.ConfigRead()

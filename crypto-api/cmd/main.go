@@ -3,23 +3,33 @@ package main
 import (
 	"crypto-api/config"
 	"crypto-api/handlers"
+	"crypto-api/utilities"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
 	// формирование таблицы с парами
 	pairList, _, port, _ := config.ConfigRead()
-	handlers.Init(pairList)
+	utilities.InitLots(pairList)
 
+	r := mux.NewRouter()
+	
 	// Регистрируем обработчики
-	http.HandleFunc("/user", handlers.HandleCreateUser)    // POST
-	http.HandleFunc("/lot", handlers.HandleGetLot)         // GET
-	http.HandleFunc("/pair", handlers.HandlePair)          // GET
-	http.HandleFunc("/balance", handlers.HandleGetBalance) // GET
+	r.HandleFunc("/user", handlers.HandleCreateUser).Methods("POST")   // POST
+	r.HandleFunc("/lot", handlers.HandleGetLot).Methods("GET")        // GET
+	r.HandleFunc("/pair", handlers.HandlePair).Methods("GET")             // GET
+	r.HandleFunc("/balance", handlers.HandleGetBalance).Methods("GET")  // GET
+
+	r.HandleFunc("/order", handlers.CreateOrder).Methods("POST")
+	r.HandleFunc("/order", handlers.GetOrders).Methods("GET")
+	r.HandleFunc("/order", handlers.DeleteOrder).Methods("DELETE")
 
 	// Запускаем сервер на порту 8080
+	http.ListenAndServe(":8080", r)
 	log.Println("Сервер запущен на порту " + strconv.Itoa(port) + " ...")
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
 
