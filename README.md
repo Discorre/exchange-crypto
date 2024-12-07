@@ -86,7 +86,7 @@ Exchange-Crypto - это API для криптовалютной биржи, р�
 Для выполнения запросов:
 
 1. Выберите нужный запрос из коллекции.
-2. Убедитесь, что сервер запущен на `http://localhost:8080`.
+2. Убедитесь, что сервер запущен на `http://localhost`.
 3. Нажмите кнопку "Send" для отправки запроса.
 
 Примечание: Некоторые запросы могут требовать аутентификации или дополнительных параметров. Убедитесь, что вы правильно настроили эти параметры перед отправкой запроса.
@@ -97,7 +97,7 @@ Exchange-Crypto - это API для криптовалютной биржи, р�
 
 1. Создание нового пользователя:
 ```bash
-curl -X POST http://localhost:8080/user \
+curl -X POST http://localhost/user \
 -H "Content-Type: application/json" \
 -d '{
         "username": "newuser"
@@ -106,17 +106,17 @@ curl -X POST http://localhost:8080/user \
 
 2. Получение информации о лотах:
 ```bash
-curl -X GET http://localhost:8080/lot
+curl -X GET http://localhostlot
 ```
 
 3. Получение информации о парах:
 ```bash
-curl -X GET http://localhost:8080/pair
+curl -X GET http://localhost/pair
 ```
 
 4. Создание нового ордера:
 ```bash
-curl -X POST http://localhost:8080/order \
+curl -X POST http://localhost/order \
 -H "Content-Type: application/json" \
 -H "X-USER-KEY: 1956be07-63d3-4569-80f0-2d630fd0c02a" \
 -d '{
@@ -129,12 +129,12 @@ curl -X POST http://localhost:8080/order \
 
 5. Получение списка ордеров:
 ```bash
-curl -X GET http://localhost:8080/order
+curl -X GET http://localhost/order
 ```
 
 6. Удаление ордера:
 ```bash
-curl -X DELETE http://localhost:8080/order \
+curl -X DELETE http://localhost/order \
 -H "Content-Type: application/json" \
 -H "X-USER-KEY: 1956be07-63d3-4569-80f0-2d630fd0c02a" \
 -d '{
@@ -144,6 +144,6 @@ curl -X DELETE http://localhost:8080/order \
 
 7. Получение баланса пользователя:
 ```bash
-curl -X GET http://localhost:8080/balance \
+curl -X GET http://localhost/balance \
 -H "Content-Type: application/json"
 ```
