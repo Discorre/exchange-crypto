@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto-api/requestDB"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,6 +23,7 @@ func HandlePair(w http.ResponseWriter, r *http.Request) {
 	// Выполняем запрос к базе данных
 	dbResponse, err := requestDB.RquestDataBase(getPairsQuery)
 	if err != nil {
+		fmt.Println("Ошибка при получении пар: ", err)
 		return // Если произошла ошибка, завершаем выполнение
 	}
 
@@ -57,6 +59,7 @@ func HandlePair(w http.ResponseWriter, r *http.Request) {
 
 	// Устанавливаем заголовок ответа и отправляем данные в формате JSON
 	w.Header().Set("Content-Type", "application/json")
+	fmt.Printf("Пары успешно получены: %+v\n", pairs)
 	json.NewEncoder(w).Encode(pairs)
 }
 

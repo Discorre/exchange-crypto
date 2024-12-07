@@ -219,6 +219,7 @@ func SearchOrder(searchUserID string, orderPairID int, orderType string, quantit
 	// Проводим транзакции с подходящими ордерами
 	totalQuantity, er := conductTransactions(quantity, orders, orderType)
 	if er != nil {
+		fmt.Println("Error when searching for orders")
 		return -1, errors.New("ошибка при поиске ордеров")
 	}
 

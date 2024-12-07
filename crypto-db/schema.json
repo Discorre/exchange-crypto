@@ -1,6 +1,6 @@
 {
     "name": "exchange",
-    "tuples_limit": 300,
+    "tuples_limit": 900,
     "structure": {
         "user": ["username", "key"],
         "user_lot": ["user_id", "lot_id", "quantity"],

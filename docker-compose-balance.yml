@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: ./crypto-api
+    volumes:
+      - ./crypto-api/config.json:/app/config.json
+    depends_on:
+      - db
+    restart: always
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  db:
+    build:
+      context: ./crypto-db
+    ports:
+      - "7432:7432"
+    volumes:
+      - ./crypto-db/exchange:/app/exchange
+      - ./crypto-db/schema.json:/app/schema.json
+    restart: always    
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+    restart: always

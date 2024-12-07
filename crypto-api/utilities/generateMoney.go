@@ -3,6 +3,7 @@ package utilities
 import (
 	"crypto-api/config"
 	"crypto-api/requestDB"
+	"fmt"
 )
 
 // Генерация активов пользователей
@@ -30,6 +31,7 @@ func GenerateMoney(userKey string) {
 		// Выполняем запрос к базе данных для получения идентификатора лота
 		lotIDResponse, err := requestDB.RquestDataBase(getLotIDQuery)
 		if err != nil {
+			fmt.Println("Error getting")
 			return
 		}
 
@@ -42,6 +44,7 @@ func GenerateMoney(userKey string) {
 		// Выполняем запрос к базе данных для добавления записи
 		_, insertErr := requestDB.RquestDataBase(insertUserLotQuery)
 		if insertErr != nil {
+			fmt.Println("Error inserting")
 			return // Завершаем выполнение при ошибке
 		}
 	}

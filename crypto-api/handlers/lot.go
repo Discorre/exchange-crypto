@@ -4,6 +4,7 @@ import (
 	"crypto-api/requestDB"
 	"encoding/json"
 	"net/http"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -21,6 +22,7 @@ func HandleGetLot(w http.ResponseWriter, r *http.Request) {
 	// Выполняем запрос к базе данных
 	dbResponse, err := requestDB.RquestDataBase(getLotsQuery)
 	if err != nil {
+		fmt.Printf("Error getting: %v\n", err)
 		return // Если ошибка, выходим из функции
 	}
 

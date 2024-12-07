@@ -4,6 +4,7 @@ import (
 	"crypto-api/orderLogic"
 	"crypto-api/requestDB"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -43,6 +44,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// Проверка наличия заголовка X-USER-KEY, проверить есть ли такой пользователь
 	if userKey == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		fmt.Println("Empty user key")
 		return
 	}
 
@@ -50,6 +52,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	var req CreateOrderRequestStruct
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		fmt.Println("Invalid JSON")
 		return
 	}
 
@@ -58,6 +61,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	userID, err := requestDB.RquestDataBase(reqUserID)
 	if err != nil || userID == "" {
 		http.Error(w, "User unauthorized", http.StatusUnauthorized)
+		fmt.Println("User unauthorized")
 		return
 	}
 	userID = userID[:len(userID)-2] // Убираем лишние символы из строки
@@ -67,6 +71,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	pairID, err1 := requestDB.RquestDataBase(reqPairID)
 	if err1 != nil || pairID == "" {
 		http.Error(w, "Pair not found", http.StatusNotFound)
+		fmt.Println("Pair not found")
 		return
 	}
 
@@ -74,6 +79,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	payErr := orderLogic.PayByOrder(userID, req.PairID, req.Quantity, req.Price, req.Type, true)
 	if payErr != nil {
 		http.Error(w, "Not enough funds", http.StatusPaymentRequired)
+		fmt.Println("Not enough funds", payErr)
 		return
 	}
 
@@ -81,6 +87,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	newQuant, searchError := orderLogic.SearchOrder(userID, req.PairID, req.Type, req.Quantity, req.Price, req.Type)
 	if searchError != nil {
 		http.Error(w, "Not enough orders", http.StatusNotFound)
+		fmt.Println("Not enough orders")
 		return
 	}
 
@@ -94,6 +101,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		var closeOrderQuery string = "INSERT INTO order VALUES ('" + userID + "', '" + strconv.Itoa(req.PairID) + "', '" + strconv.FormatFloat(req.Quantity, 'f', -1, 64) + "', '" + strconv.FormatFloat(req.Price, 'f', -1, 64) + "', '" + req.Type + "', 'close')"
 		_, err := requestDB.RquestDataBase(closeOrderQuery)
 		if err != nil {
+			fmt.Println("Error creating")
 			return
 		}
 		status = "open"
@@ -105,6 +113,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	var reqBD string = "INSERT INTO order VALUES ('" + userID + "', '" + strconv.Itoa(req.PairID) + "', '" + strconv.FormatFloat(newQuant, 'f', -1, 64) + "', '" + strconv.FormatFloat(req.Price, 'f', -1, 64) + "', '" + req.Type + "', '" + status + "')"
 	_, err2 := requestDB.RquestDataBase(reqBD)
 	if err2 != nil {
+		
 		return
 	}
 
@@ -126,7 +135,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 
 func GetOrders(w http.ResponseWriter, r *http.Request){
-	reqBD := "SELECT * FROM order" //WHERE order.closed = 'open'"
+	reqBD := "SELECT * FROM order WHERE order.closed = 'open'"
 
 	// Имитируем вызов базы данных
 	response, err := requestDB.RquestDataBase(reqBD)
@@ -173,6 +182,59 @@ func GetOrders(w http.ResponseWriter, r *http.Request){
 	// Устанавливаем заголовки ответа
 	w.Header().Set("Content-Type", "application/json")
 
+	// Кодируем массив ордеров в JSON и отправляем клиенту
+	json.NewEncoder(w).Encode(orders)
+}
+
+func GetAllOrders(w http.ResponseWriter, r *http.Request){
+	reqBD := "SELECT * FROM order"
+
+	// Имитируем вызов базы данных
+	response, err := requestDB.RquestDataBase(reqBD)
+	if err != nil {
+		http.Error(w, "Ошибка запроса к базе данных", http.StatusInternalServerError)
+		fmt.Println("Error creating request for db: ", err)
+		return
+	}
+
+	// Преобразуем ответ базы данных в строки
+	rows := strings.Split(strings.TrimSpace(response), "\n") // Разделяем строки
+
+	// Массив для хранения ордеров
+	var orders []GetOrderResponseStruct
+
+	// Парсим каждую строку
+	for _, row := range rows {
+		fields := strings.Split(row, " ")
+		if len(fields) < 7 {
+			continue // Пропускаем строки с недостаточным количеством полей
+		}
+
+		// Преобразуем каждое поле и заполняем структуру
+		orderID, _ := strconv.Atoi(strings.TrimSpace(fields[0]))
+		userID, _ := strconv.Atoi(strings.TrimSpace(fields[1]))
+		pairID, _ := strconv.Atoi(strings.TrimSpace(fields[2]))
+		quantity, _ := strconv.ParseFloat(strings.TrimSpace(fields[3]), 64)
+		orderType := strings.TrimSpace(fields[5])
+		price, _ := strconv.ParseFloat(strings.TrimSpace(fields[4]), 64)
+		closed := strings.TrimSpace(fields[6])
+
+		order := GetOrderResponseStruct{
+			OrderID:  orderID,
+			UserID:   userID,
+			PairID:   pairID,
+			Quantity: quantity,
+			Type:     orderType,
+			Price:    price,
+			Closed:   closed,
+		}
+
+		orders = append(orders, order) // Добавляем ордер в массив
+	}
+
+	// Устанавливаем заголовки ответа
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Println("")
 	// Кодируем массив ордеров в JSON и отправляем клиенту
 	json.NewEncoder(w).Encode(orders)
 }

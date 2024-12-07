@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto-api/requestDB"
 	"crypto-api/utilities"
+	"fmt"
 
 	"encoding/json"
 	"net/http"
@@ -26,6 +27,7 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var req CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utilities.SendJSONError(w, "Ошибка при разборе JSON", http.StatusBadRequest)
+		fmt.Println("Ошибка при разборе JSON: ", err)
 		return
 	}
 
@@ -34,12 +36,14 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	userCheck, err := requestDB.RquestDataBase(checkUserQuery)
 	if err != nil {
 		utilities.SendJSONError(w, "Ошибка при проверке пользователя", http.StatusInternalServerError)
+		fmt.Println("Ошибка при проверке пользователя: ", err)
 		return
 	}
 
 	// Если есть хотя бы одна строка, значит пользователь уже существует
 	if userCheck != "" {
 		utilities.SendJSONError(w, "Username занят другим пользователем", http.StatusConflict)
+		fmt.Println("Username " + req.Username + " already exists")
 		return
 	}
 
@@ -50,11 +54,14 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	_, err = requestDB.RquestDataBase(reqBD)
 	if err != nil {
 		utilities.SendJSONError(w, "Ошибка при создании пользователя", http.StatusInternalServerError)
+		fmt.Println("Ошибка при создании пользователя: ", err)
 		return
 	}
 
 	// Генерация активов пользователя
 	utilities.GenerateMoney(userKey)
+
+	fmt.Println("Пользователь " + req.Username + " создан успешно")
 
 	// Формируем и отправляем JSON-ответ клиенту
 	utilities.SendJSONResponse(w, CreateUserResponse{Key: userKey}, http.StatusCreated)

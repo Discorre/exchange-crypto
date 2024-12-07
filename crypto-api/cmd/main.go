@@ -19,13 +19,14 @@ func main() {
 	r := mux.NewRouter()
 	
 	// Регистрируем обработчики
-	r.HandleFunc("/user", handlers.HandleCreateUser).Methods("POST")   // POST
-	r.HandleFunc("/lot", handlers.HandleGetLot).Methods("GET")        // GET
-	r.HandleFunc("/pair", handlers.HandlePair).Methods("GET")             // GET
-	r.HandleFunc("/balance", handlers.HandleGetBalance).Methods("GET")  // GET
+	r.HandleFunc("/user", handlers.HandleCreateUser).Methods("POST")
+	r.HandleFunc("/lot", handlers.HandleGetLot).Methods("GET")
+	r.HandleFunc("/pair", handlers.HandlePair).Methods("GET")
+	r.HandleFunc("/balance", handlers.HandleGetBalance).Methods("GET")
 
 	r.HandleFunc("/order", handlers.CreateOrder).Methods("POST")
 	r.HandleFunc("/order", handlers.GetOrders).Methods("GET")
+	r.HandleFunc("/allorder", handlers.GetAllOrders).Methods("GET")
 	r.HandleFunc("/order", handlers.DeleteOrder).Methods("DELETE")
 
 	// Запускаем сервер на порту 8080

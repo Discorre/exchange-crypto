@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto-api/requestDB"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -20,6 +21,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 	// Проверяем наличие заголовка X-USER-KEY
 	if userKey == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		fmt.Println("Empty user key")
 		return
 	}
 
@@ -30,6 +32,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 	userData, err := requestDB.RquestDataBase(getUserQuery)
 	if err != nil {
 		http.Error(w, "User unauthorized", http.StatusUnauthorized)
+		fmt.Println("User unauthorized")
 		return
 	}
 
@@ -37,6 +40,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 	userDataFields := strings.Split(userData, " ")
 	if len(userDataFields) < 1 {
 		http.Error(w, "User not found", http.StatusUnauthorized)
+		fmt.Println("User not found")
 		return
 	}
 	userID := userDataFields[0]
@@ -48,6 +52,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 	balanceResponse, err2 := requestDB.RquestDataBase(getBalanceQuery)
 	if err2 != nil {
 		http.Error(w, "Failed to retrieve balance", http.StatusInternalServerError)
+		fmt.Println("Failed to retrieve balance", err2)
 		return
 	}
 
@@ -81,6 +86,7 @@ func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 
 	// Устанавливаем заголовок ответа и отправляем данные в формате JSON
 	w.Header().Set("Content-Type", "application/json")
+	fmt.Println("Balance gived for user: ", userID)
 	json.NewEncoder(w).Encode(balances)
 }
 
